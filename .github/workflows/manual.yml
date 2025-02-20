@@ -44,7 +44,7 @@ jobs:
       - name: Reset Patch Push
         if: steps.check_branch.outputs.branch_is_feature == 'true'
         run: |
-          INITIAL_COMMIT_HASH=$(git merge-base --fork-point patch)
+          INITIAL_COMMIT_HASH=$(git merge-base --fork-point origin/patch)
           git checkout $INITIAL_COMMIT_HASH
           git push --force ${{ github.head_ref }}
 
