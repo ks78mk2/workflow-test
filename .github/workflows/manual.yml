@@ -36,13 +36,12 @@ jobs:
         if: steps.check_branch.outputs.branch_is_feature == 'true'
         run: |
           BRANCH_NAME=$(echo ${{ github.head_ref }} | sed 's/\//-/g')-backup
-          git checkout -b $BRANCH_NAME
+          git branch $BRANCH_NAME
 
       - name: Reset Patch Push
         if: steps.check_branch.outputs.branch_is_feature == 'true'
         run: |
-          git checkout ${{ github.head_ref }}
-          git reset --hard patch
+          git reset --hard patch        
 
       - name: Squash Merge
         if: steps.check_branch.outputs.branch_is_feature == 'true'
