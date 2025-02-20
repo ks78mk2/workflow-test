@@ -18,10 +18,8 @@ jobs:
 
       - name: Set up Git
         run: |
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.email }}"
-          echo "Git user.name set to ${{ github.actor }}"
-          echo "Git user.email set to ${{ github.email }}"
+          git config --global user.name ks78mk2
+          git config --global user.email ks78mk2@naver.com
 
       - name: Fetch all branches
         run: git fetch origin
@@ -52,8 +50,10 @@ jobs:
 
       - name: Squash Merge
         if: steps.check_branch.outputs.branch_is_feature == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           BRANCH_NAME=$(echo ${{ github.head_ref }} | sed 's/\//-/g')-backup
           git merge --squash $BRANCH_NAME
           git commit -m ${{ github.event.pull_request.title }}
-          git push --force ${{ github.head_ref }}
+          git push --force origin HEAD:${{ github.head_ref }}
