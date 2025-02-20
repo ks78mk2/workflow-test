@@ -23,6 +23,9 @@ jobs:
           echo "Git user.name set to ${{ github.actor }}"
           echo "Git user.email set to ${{ github.email }}"
 
+      - name: Fetch all branches
+        run: git fetch origin
+
       - name: Check if branch starts with 'feature/'
         id: check_branch
         run: |
@@ -41,7 +44,7 @@ jobs:
       - name: Reset Patch Push
         if: steps.check_branch.outputs.branch_is_feature == 'true'
         run: |
-          git reset --hard patch        
+          git reset --hard origin/patch      
           git push --force ${{ github.head_ref }}
 
       - name: Squash Merge
