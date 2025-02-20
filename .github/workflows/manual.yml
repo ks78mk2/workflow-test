@@ -44,7 +44,7 @@ jobs:
       - name: Reset Patch Push
         if: steps.check_branch.outputs.branch_is_feature == 'true'
         run: |
-          git reset --hard patch      
+          git reset --hard patch --
           git push --force ${{ github.head_ref }}
 
       - name: Squash Merge
