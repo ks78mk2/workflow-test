@@ -1,0 +1,53 @@
+name: Squash and Merge
+
+on:
+  pull_request:
+    branches:
+      - develop
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  squash-merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.event.pusher.email }}"
+          echo "Git user.name set to ${{ github.actor }}"
+          echo "Git user.email set to ${{ github.event.pusher.email }}"
+
+      - name: Check if branch starts with 'feature/'
+        id: check_branch
+        run: |
+          if [[ "${{ github.head_ref }}" == feature/* ]]; then
+            echo "::set-output name=branch_is_feature::true"
+          else
+            echo "::set-output name=branch_is_feature::false"
+          fi
+
+      - name: Backup Feature Branch
+        if: steps.check_branch.outputs.branch_is_feature == 'true'
+        run: |
+          BRANCH_NAME=$(echo ${{ github.head_ref }} | sed 's/\//-/g')-backup
+          git checkout -b $BRANCH_NAME
+
+      - name: Reset Patch Push
+        if: steps.check_branch.outputs.branch_is_feature == 'true'
+        run: |
+          git checkout ${{ github.head_ref }}
+          git reset --hard patch
+
+      - name: Squash Merge
+        if: steps.check_branch.outputs.branch_is_feature == 'true'
+        run: |
+          BRANCH_NAME=$(echo ${{ github.head_ref }} | sed 's/\//-/g')-backup
+          git merge --squash $BRANCH_NAME
+          git commit -m ${{ github.event.pull_request.title }}
+          git push --force ${{ github.head_ref }}
