@@ -45,7 +45,7 @@ jobs:
         if: steps.check_branch.outputs.branch_is_feature == 'true'
         run: |
           INITIAL_COMMIT_HASH=$(git merge-base --fork-point origin/patch)
-          echo "${{ INITIAL_COMMIT_HASH }}"
+          echo $INITIAL_COMMIT_HASH
           git checkout $INITIAL_COMMIT_HASH
           git push --force ${{ github.head_ref }}
           echo "Pushed to ${{ github.head_ref }}"
