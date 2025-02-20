@@ -19,9 +19,9 @@ jobs:
       - name: Set up Git
         run: |
           git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.event.pusher.email }}"
+          git config --global user.email "${{ github.email }}"
           echo "Git user.name set to ${{ github.actor }}"
-          echo "Git user.email set to ${{ github.event.pusher.email }}"
+          echo "Git user.email set to ${{ github.email }}"
 
       - name: Check if branch starts with 'feature/'
         id: check_branch
