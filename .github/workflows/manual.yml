@@ -19,9 +19,9 @@ jobs:
       - name: Set up Git
         run: |
           git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.event.pusher.email }}"
+          git config --global user.email "${{ github.email }}"
           echo "Git user.name set to ${{ github.actor }}"
-          echo "Git user.email set to ${{ github.event.pusher.email }}"
+          echo "Git user.email set to ${{ github.email }}"
 
       - name: Check if branch starts with 'feature/'
         id: check_branch
@@ -36,13 +36,13 @@ jobs:
         if: steps.check_branch.outputs.branch_is_feature == 'true'
         run: |
           BRANCH_NAME=$(echo ${{ github.head_ref }} | sed 's/\//-/g')-backup
-          git checkout -b $BRANCH_NAME
+          git branch $BRANCH_NAME
 
       - name: Reset Patch Push
         if: steps.check_branch.outputs.branch_is_feature == 'true'
         run: |
-          git checkout ${{ github.head_ref }}
-          git reset --hard patch
+          git reset --hard patch        
+          git push --force ${{ github.head_ref }}
 
       - name: Squash Merge
         if: steps.check_branch.outputs.branch_is_feature == 'true'
