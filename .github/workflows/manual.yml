@@ -18,8 +18,10 @@ jobs:
 
       - name: Set up Git
         run: |
-          git config --global user.name ks78mk2
-          git config --global user.email ks78mk2@naver.com
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.email }}"
+          echo "Git user.name set to ${{ github.actor }}"
+          echo "Git user.email set to ${{ github.email }}"
 
       - name: Fetch all branches
         run: git fetch origin
@@ -42,18 +44,13 @@ jobs:
       - name: Reset Patch Push
         if: steps.check_branch.outputs.branch_is_feature == 'true'
         run: |
-          INITIAL_COMMIT_HASH=$(git merge-base --fork-point origin/patch)
-          echo $INITIAL_COMMIT_HASH
-          git checkout $INITIAL_COMMIT_HASH
+          git reset --hard patch      
           git push --force ${{ github.head_ref }}
-          echo "Pushed to ${{ github.head_ref }}"
 
       - name: Squash Merge
         if: steps.check_branch.outputs.branch_is_feature == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           BRANCH_NAME=$(echo ${{ github.head_ref }} | sed 's/\//-/g')-backup
           git merge --squash $BRANCH_NAME
           git commit -m ${{ github.event.pull_request.title }}
-          git push --force origin HEAD:${{ github.head_ref }}
+          git push --force ${{ github.head_ref }}
